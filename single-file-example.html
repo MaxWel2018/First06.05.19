@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Hello World</title>
+    <script src="js/react.development.js"></script>
+    <script src="js/react-dom.development.js"></script>
+    <link rel="stylesheet" href="css/syle.css">
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+<body>
+<div id="program"></div>
+<script type="text/babel">
+  const place = document.getElementById('program')
+
+  class Task extends React.Component {
+    constructor (props) {
+      super(props)
+      this.dl = this.remove.bind(this)
+      this.upT = this.save.bind(this)
+      this.exampleRef = React.createRef()
+      this.state = {
+        edit: false,
+      }
+    };
+
+    edit () {
+      this.setState({
+        edit: true
+      })
+    }
+
+        remove () {
+          this.props.dl(this.props.index)
+        }
+
+        save () {
+          this.props.upT(this.refs.exampleRef.current.value, this.props.index)
+          this.setState({edit: false})
+        }
+
+    rendNorm = () => {
+      return (
+        <div className="box">
+          <div className="text">{this.props.children}</div>
+          <button onClick={this.edit} className="btn light">Редактировать</button>
+          <button   onClick={()=>{this.props.deleteBlock(this.props.index)}}  className="btn red">Удалить</button>
+        </div>
+      )
+    }
+    rendEdit = () => {
+      return (
+        <div className="box ">
+          <textarea ref={this.exampleRef} defaultValue={this.props.children}/>
+          <button    className="btn success">Сохранить</button>
+        </div>
+      )
+    }
+
+    render () {
+      if (this.state.edit) {
+        return this.rendEdit()
+      } else {
+        return this.rendNorm()
+      }
+    }
+  }
+
+  class Field extends React.Component {
+    constructor (props) {
+      super(props)
+      this.state = {
+        tasks: [
+          'Нужно выучить React!',
+          'Нужно доучить Java!',
+          'Не сойти с ума!'
+        ]
+      }
+    };
+
+    deleteBlock (i) {
+      let arr = this.state.tasks
+      arr.splice(i, 1)
+      this.setState({tasks: arr})
+    }
+
+    updateText (text, i) {
+      let arr = this.state.tasks
+      arr[i] = text
+      this.setState({tasks: arr})
+
+    }
+
+    render () {
+      return (
+        <div className="field">
+          {
+            this.state.tasks.map((item, i) => <Task dl={this.deleteBlock()} upT={this.updateText()} key={i} index={i} />)
+          }
+        </div>
+      )
+    }
+
+  }
+
+  ReactDOM.render(
+    <Field/>,
+    place
+  )
+
+</script>
+</body>
+</html>
